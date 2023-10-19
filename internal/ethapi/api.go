@@ -2120,6 +2120,8 @@ func (s *TransactionAPI) GetTransactionReceipt(ctx context.Context, hash common.
 	}
 	receipt := receipts[index]
 
+	log.Debug("receipt", "txHash", receipt.TxHash, "EffectiveGasPrice", receipt.EffectiveGasPrice)
+
 	// Derive the sender.
 	signer := types.MakeSigner(s.b.ChainConfig(), header.Number, header.Time)
 	from, _ := types.Sender(signer, tx)

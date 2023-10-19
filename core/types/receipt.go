@@ -27,6 +27,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
 )
@@ -324,6 +325,7 @@ func (rs Receipts) EncodeIndex(i int, w *bytes.Buffer) {
 // DeriveFields fills the receipts with their computed fields based on consensus
 // data and contextual infos like containing block and transactions.
 func (rs Receipts) DeriveFields(config *params.ChainConfig, hash common.Hash, number uint64, time uint64, baseFee *big.Int, blobGasPrice *big.Int, txs []*Transaction) error {
+	log.Debug("receipts DeriveFields")
 	signer := MakeSigner(config, new(big.Int).SetUint64(number), time)
 
 	logIndex := uint(0)
@@ -334,7 +336,9 @@ func (rs Receipts) DeriveFields(config *params.ChainConfig, hash common.Hash, nu
 		// The transaction type and hash can be retrieved from the transaction itself
 		rs[i].Type = txs[i].Type()
 		rs[i].TxHash = txs[i].Hash()
+		log.Debug("receipt EffectiveGasPrice cal before", "txHash", rs[i].TxHash, "EffectiveGasPrice", rs[i].EffectiveGasPrice)
 		rs[i].EffectiveGasPrice = txs[i].inner.effectiveGasPrice(new(big.Int), baseFee)
+		log.Debug("receipt EffectiveGasPrice cal after", "txHash", rs[i].TxHash, "EffectiveGasPrice", rs[i].EffectiveGasPrice)
 
 		// EIP-4844 blob transaction fields
 		if txs[i].Type() == BlobTxType {

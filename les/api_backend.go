@@ -167,6 +167,7 @@ func (b *LesApiBackend) StateAndHeaderByNumberOrHash(ctx context.Context, blockN
 }
 
 func (b *LesApiBackend) GetReceipts(ctx context.Context, hash common.Hash) (types.Receipts, error) {
+	log.Debug("lesApiBackend in")
 	if number := rawdb.ReadHeaderNumber(b.eth.chainDb, hash); number != nil {
 		return light.GetBlockReceipts(ctx, b.eth.odr, hash, *number)
 	}
